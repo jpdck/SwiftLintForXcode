@@ -31,16 +31,21 @@ import Foundation
     func execute(in directory: String, with arguments: [String], reply: @escaping SwiftLintHelperResultHandler) {
 
         let task = Process(), stdout = Pipe(), stderr = Pipe()
-        task.launchPath = "/usr/bin/env"
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
         task.arguments = ["/usr/local/bin/swiftlint"] + arguments
-        task.currentDirectoryPath = directory
+        task.currentDirectoryURL = URL(fileURLWithPath: directory)
         task.standardOutput = stdout
         task.standardError = stderr
-        task.launch()
-        let output = String(data: stdout.fileHandleForReading.readDataToEndOfFile(),
-                            encoding: .utf8) ?? ""
-        let errorOutput = String(data: stderr.fileHandleForReading.readDataToEndOfFile(),
-                                 encoding: .utf8) ?? ""
-        reply(Int(task.terminationStatus), output, errorOutput)
+        
+        do {
+            try task.run()
+            let output = String(data: stdout.fileHandleForReading.readDataToEndOfFile(),
+                                encoding: .utf8) ?? ""
+            let errorOutput = String(data: stderr.fileHandleForReading.readDataToEndOfFile(),
+                                     encoding: .utf8) ?? ""
+            reply(Int(task.terminationStatus), output, errorOutput)
+        } catch {
+            reply(-1, "", "Failed to launch swiftlint: \(error.localizedDescription)")
+        }
     }
 }
