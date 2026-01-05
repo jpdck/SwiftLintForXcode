@@ -71,8 +71,8 @@ class SourceEditorCommand: NSObject, XCSourceEditorCommand {
             }
 
             // check result
-            if let autocorrected = try? String(contentsOfFile: source) as NSString
-                , invocation.buffer.completeBuffer != autocorrected as String {
+            if let autocorrected = try? String(contentsOfFile: source) as NSString,
+                invocation.buffer.completeBuffer != autocorrected as String {
 
                 // update lines
                 var start = 0, end = 0, lineIndex = 0
