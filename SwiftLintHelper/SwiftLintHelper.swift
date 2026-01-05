@@ -43,6 +43,7 @@ import Foundation
                                 encoding: .utf8) ?? ""
             let errorOutput = String(data: stderr.fileHandleForReading.readDataToEndOfFile(),
                                      encoding: .utf8) ?? ""
+            task.waitUntilExit()
             reply(Int(task.terminationStatus), output, errorOutput)
         } catch {
             reply(-1, "", "Failed to launch swiftlint: \(error.localizedDescription)")
